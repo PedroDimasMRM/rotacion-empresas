@@ -140,10 +140,26 @@ class InformePDF(FPDF):
 
 
 def _s(text):
-    """Safe string."""
+    """Safe string: limpia caracteres que Helvetica no soporta."""
     if text is None:
         return ""
-    return str(text)
+    s = str(text)
+    # Reemplazar caracteres Unicode problematicos
+    s = s.replace("\u2014", "-")   # em dash
+    s = s.replace("\u2013", "-")   # en dash
+    s = s.replace("\u2018", "'")   # left single quote
+    s = s.replace("\u2019", "'")   # right single quote
+    s = s.replace("\u201c", '"')   # left double quote
+    s = s.replace("\u201d", '"')   # right double quote
+    s = s.replace("\u2026", "...")  # ellipsis
+    s = s.replace("\u00a0", " ")   # non-breaking space
+    s = s.replace("\u2022", "-")   # bullet
+    # Fallback: reemplazar cualquier caracter fuera de latin-1
+    try:
+        s.encode("latin-1")
+    except UnicodeEncodeError:
+        s = s.encode("latin-1", errors="replace").decode("latin-1")
+    return s
 
 
 def generar_pdf(df, noticias, output_dir):
@@ -433,7 +449,7 @@ def _ficha(pdf, row, datos_noticias, sc, nc, ic):
         pdf.set_font(F, "B", 8)
         pdf.cell(25, 5, f"{label}:")
         pdf.set_font(F, "", 8)
-        pdf.cell(65, 5, str(value), new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(65, 5, _s(value), new_x="LMARGIN", new_y="NEXT")
     y1 = pdf.get_y()
 
     pdf.set_y(y0)
@@ -442,7 +458,7 @@ def _ficha(pdf, row, datos_noticias, sc, nc, ic):
         pdf.set_font(F, "B", 8)
         pdf.cell(25, 5, f"{label}:")
         pdf.set_font(F, "", 8)
-        pdf.cell(60, 5, str(value), new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(60, 5, _s(value), new_x="LMARGIN", new_y="NEXT")
 
     pdf.set_y(max(y1, pdf.get_y()))
 
