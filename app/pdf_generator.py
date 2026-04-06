@@ -42,9 +42,13 @@ def _col(df, *keywords):
 
 
 def _find_font(names):
-    """Busca un archivo de fuente TTF en el sistema y en matplotlib."""
+    """Busca un archivo de fuente TTF en el proyecto, matplotlib o el sistema."""
     search_dirs = []
-    # matplotlib ships DejaVuSans (always available)
+    # Carpeta fonts/ dentro del propio proyecto (siempre disponible)
+    project_fonts = os.path.join(os.path.dirname(__file__), "fonts")
+    if os.path.isdir(project_fonts):
+        search_dirs.append(project_fonts)
+    # matplotlib ships DejaVuSans
     try:
         import matplotlib
         mpl_fonts = os.path.join(os.path.dirname(matplotlib.__file__), "mpl-data", "fonts", "ttf")
