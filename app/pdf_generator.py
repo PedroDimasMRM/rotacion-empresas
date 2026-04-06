@@ -80,21 +80,16 @@ class InformePDF(FPDF):
 
     def _registrar_fuente(self):
         """Registra una fuente Unicode TTF, buscando en el sistema."""
-        # Intentar Arial (Windows) o DejaVuSans (Linux)
         regular = _find_font(["arial.ttf", "Arial.ttf", "DejaVuSans.ttf"])
         bold = _find_font(["arialbd.ttf", "Arial Bold.ttf", "DejaVuSans-Bold.ttf"])
         italic = _find_font(["ariali.ttf", "Arial Italic.ttf", "DejaVuSans-Oblique.ttf"])
+        bi = _find_font(["arialbi.ttf", "DejaVuSans-BoldOblique.ttf"])
 
         if regular:
             self.add_font("PDFFont", "", regular)
-            if bold:
-                self.add_font("PDFFont", "B", bold)
-            if italic:
-                self.add_font("PDFFont", "I", italic)
-            # BI: intentar cargar, si no usar bold como fallback
-            bi = _find_font(["arialbi.ttf", "DejaVuSans-BoldOblique.ttf"])
-            if bi:
-                self.add_font("PDFFont", "BI", bi)
+            self.add_font("PDFFont", "B", bold or regular)
+            self.add_font("PDFFont", "I", italic or regular)
+            self.add_font("PDFFont", "BI", bi or bold or regular)
             return "PDFFont"
 
         # Fallback: usar Helvetica (latin-1, no Unicode completo)
