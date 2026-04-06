@@ -42,8 +42,16 @@ def _col(df, *keywords):
 
 
 def _find_font(names):
-    """Busca un archivo de fuente TTF en el sistema."""
+    """Busca un archivo de fuente TTF en el sistema y en matplotlib."""
     search_dirs = []
+    # matplotlib ships DejaVuSans (always available)
+    try:
+        import matplotlib
+        mpl_fonts = os.path.join(os.path.dirname(matplotlib.__file__), "mpl-data", "fonts", "ttf")
+        if os.path.isdir(mpl_fonts):
+            search_dirs.append(mpl_fonts)
+    except Exception:
+        pass
     # Windows
     windir = os.environ.get("WINDIR")
     if windir:
@@ -59,11 +67,9 @@ def _find_font(names):
 
     for name in names:
         for d in search_dirs:
-            # Buscar directamente
             path = os.path.join(d, name)
             if os.path.isfile(path):
                 return path
-            # Buscar recursivamente
             for root, _, files in os.walk(d):
                 if name in files:
                     return os.path.join(root, name)
