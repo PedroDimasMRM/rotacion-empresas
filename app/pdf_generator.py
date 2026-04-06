@@ -92,6 +92,17 @@ class InformePDF(FPDF):
 
     def _registrar_fuente(self):
         """Registra una fuente Unicode TTF, buscando en el sistema."""
+        # Primero intentar fuentes bundled en app/fonts/
+        fonts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
+        bundled_regular = os.path.join(fonts_dir, "DejaVuSans.ttf")
+        if os.path.isfile(bundled_regular):
+            self.add_font("PDFFont", "", bundled_regular)
+            self.add_font("PDFFont", "B", os.path.join(fonts_dir, "DejaVuSans-Bold.ttf"))
+            self.add_font("PDFFont", "I", os.path.join(fonts_dir, "DejaVuSans-Oblique.ttf"))
+            self.add_font("PDFFont", "BI", os.path.join(fonts_dir, "DejaVuSans-BoldOblique.ttf"))
+            return "PDFFont"
+
+        # Buscar en sistema
         regular = _find_font(["arial.ttf", "Arial.ttf", "DejaVuSans.ttf"])
         bold = _find_font(["arialbd.ttf", "Arial Bold.ttf", "DejaVuSans-Bold.ttf"])
         italic = _find_font(["ariali.ttf", "Arial Italic.ttf", "DejaVuSans-Oblique.ttf"])
