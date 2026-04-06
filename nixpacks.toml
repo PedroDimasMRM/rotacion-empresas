@@ -1,5 +1,9 @@
 [phases.setup]
-aptPkgs = ["fonts-dejavu-core"]
+nixPkgs = []
+aptPkgs = ["fonts-dejavu-core", "fontconfig"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
 
 [start]
-cmd = "streamlit run app/dashboard.py --server.port ${PORT:-8501} --server.address 0.0.0.0 --server.headless true"
+cmd = "fc-cache -f 2>/dev/null; streamlit run app/dashboard.py --server.port ${PORT:-8501} --server.address 0.0.0.0 --server.headless true"

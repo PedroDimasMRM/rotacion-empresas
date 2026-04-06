@@ -77,6 +77,8 @@ class InformePDF(FPDF):
         self.fecha = fecha
         self.set_auto_page_break(auto=True, margin=20)
         self._font_name = self._registrar_fuente()
+        global F
+        F = self._font_name
 
     def _registrar_fuente(self):
         """Registra una fuente Unicode TTF, buscando en el sistema."""
